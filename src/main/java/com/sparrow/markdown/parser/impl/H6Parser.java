@@ -9,13 +9,13 @@ import com.sparrow.markdown.parser.MarkParser;
  * @date 2018/2/6
  */
 public class H6Parser implements MarkParser {
-    private String content;
- @Override
-    public String parse(MarkContext parser) {
-        return String.format("<h6>%1$s</h6>", content);
+    @Override
+    public void parse(MarkContext markContext) {
+        markContext.parse(markContext, this.mark());
     }
 
-    @Override public MARK mark() {
+    @Override
+    public MARK mark() {
         return MARK.H6;
     }
 }

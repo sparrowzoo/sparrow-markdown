@@ -23,8 +23,11 @@ public enum MARK {
     UNDERLINE("++", "++", true,"<span class=\"underline\">%1$s</span>"),
     ERASURE("~~", "~~", true,"<span class=\"erasure\">%1$s</span>"),
     ITALIC("*", "*", true,"<span class=\"italic\">%1$s</span>"),
-    LITERARY("", "", false,""),
-    BOLD("**", "**", true,"<span class=\"bold\">%1$s</span>");
+    LITERARY("", "", false,"%1$s"),
+    BOLD("**", "**", true,"<span class=\"bold\">%1$s</span>"),
+    IMAGE("![.*](",")",true,"<image src=\"%1$s\"/><label>%@$s</label>"),
+    HYPER_LINK("-[.*](",")",true,"<a href=\"%1$s\">%2$s</a>");
+
 
     private String start;
     private String end;

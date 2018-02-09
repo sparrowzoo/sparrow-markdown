@@ -13,14 +13,9 @@ public class LiteraryParser implements MarkParser {
 
     @Override
     public void parse(MarkContext markContext) {
-        MarkWithIndex mark = markContext.detectStartMark(false);
-        //当前文本结束
-        if (mark != null) {
-            markContext.append(markContext.parseComplex(mark.getPointer(),this.mark()).getHtml());
-            return;
-        }
-        markContext.append(markContext.parseComplex(markContext.getContentLength(),this.mark()).getHtml());
+        markContext.parse(markContext,this.mark());
     }
+
 
     @Override
     public MARK mark() {

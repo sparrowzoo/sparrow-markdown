@@ -10,11 +10,12 @@ import com.sparrow.markdown.parser.MarkParser;
  */
 public class H1Parser implements MarkParser {
     @Override
-    public void parse(MarkContext context) {
-       context.append(String.format("<h1>%1$s</h1>", context.getHtml()));
+    public void parse(MarkContext markContext) {
+        markContext.parse(markContext, this.mark());
     }
 
-    @Override public MARK mark() {
+    @Override
+    public MARK mark() {
         return MARK.H1;
     }
 }

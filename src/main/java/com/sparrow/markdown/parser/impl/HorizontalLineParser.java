@@ -10,9 +10,10 @@ import com.sparrow.markdown.parser.MarkParser;
  */
 public class HorizontalLineParser implements MarkParser {
     @Override
-    public String parse(MarkContext parser) {
-        return "<hr/>";
+    public void parse(MarkContext markContext) {
+        markContext.parse(markContext,this.mark());
     }
+
 
     @Override public MARK mark() {
         return MARK.HORIZONTAL_LINE;

@@ -11,10 +11,10 @@ import com.sparrow.markdown.parser.MarkParser;
 public class HighlightParser implements MarkParser {
 
     @Override
-    public String parse(MarkContext parser) {
-
-        return String.format(, "");
+    public void parse(MarkContext markContext) {
+        markContext.parse(markContext,this.mark());
     }
+
     @Override public MARK mark() {
         return MARK.HIGHLIGHT;
     }

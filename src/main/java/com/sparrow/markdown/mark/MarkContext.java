@@ -21,10 +21,7 @@ import com.sparrow.constant.magic.SYMBOL;
 import com.sparrow.markdown.parser.MarkParser;
 import com.sparrow.markdown.parser.impl.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author by harry
@@ -37,10 +34,10 @@ public class MarkContext {
         this.setDetectLine(isLine);
     }
 
-    public static final int MAX_MARK_LENGTH = 7;
-    private static final int MARK_COUNT = 20;
+    private static final int MARK_COUNT =32;
     public static final List<MARK> CONTAINER = new ArrayList<MARK>(MARK_COUNT);
     public static final Map<MARK, MarkParser> MARK_PARSER_MAP = new HashMap<MARK, MarkParser>(MARK_COUNT);
+    public static final Map<MARK, List<MARK>> CHILD_MARK_PARSER = new HashMap<MARK, List<MARK>>(MARK_COUNT);
 
     /**
      * sort by key length
@@ -83,6 +80,24 @@ public class MarkContext {
         MARK_PARSER_MAP.put(MARK.LITERARY, new LiteraryParser());
         MARK_PARSER_MAP.put(MARK.ITALIC, new ItalicParser());
         MARK_PARSER_MAP.put(MARK.BOLD, new BoldParser());
+
+        CHILD_MARK_PARSER.put(MARK.H1, Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.H2, Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.H3, Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.H4, Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.H5, Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.H6, Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.HORIZONTAL_LINE, null);
+        CHILD_MARK_PARSER.put(MARK.QUOTE,Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.CHECK_BOX,Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.DISABLE_CHECK_BOX,Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HIGHLIGHT,MARK.HIGHLIGHT,MARK.IMAGE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.CODE,null);
+        CHILD_MARK_PARSER.put(MARK.HIGHLIGHT,Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.UNDERLINE,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.UNDERLINE,Arrays.asList(MARK.BOLD, MARK.ITALIC,MARK.ERASURE,MARK.HIGHLIGHT,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.BOLD,Arrays.asList(MARK.UNDERLINE, MARK.ITALIC,MARK.ERASURE,MARK.HIGHLIGHT,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.ITALIC,Arrays.asList(MARK.UNDERLINE, MARK.BOLD,MARK.ERASURE,MARK.HIGHLIGHT,MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.IMAGE,null);
+        CHILD_MARK_PARSER.put(MARK.HYPER_LINK,Arrays.asList(MARK.UNDERLINE, MARK.BOLD,MARK.ERASURE,MARK.HIGHLIGHT,MARK.ITALIC));
     }
 
     private boolean detectLine;
@@ -161,7 +176,7 @@ public class MarkContext {
         this.detectLine = detectLine;
     }
 
-    public MarkContext parseComplex(int endMarkIndex,MARK mark) {
+    public MarkContext parseComplex(int endMarkIndex, MARK mark) {
         String content = this.content.substring(this.currentPointer, endMarkIndex);
         MarkContext innerContext = new MarkContext(content, mark.isLine());
         MarkdownParserComposite.getInstance().parse(innerContext);
@@ -169,11 +184,22 @@ public class MarkContext {
         return innerContext;
     }
 
-    public MarkWithIndex detectStartMark(Boolean isLine) {
+    public void parse(MarkContext markContext, MARK mark) {
+        int endMarkIndex = markContext.getContent().indexOf(mark.getEnd(), markContext.getCurrentPointer());
+        if (endMarkIndex > 0) {
+            MarkContext innerMarkContext = this.parseComplex(endMarkIndex, mark);
+            markContext.append(String.format(mark.getFormat(), innerMarkContext.getHtml()));
+            return;
+        }
+        MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(markContext);
+    }
+
+
+    public MarkWithIndex detectStartMark(Boolean isLine,List<MARK> container) {
         if (this.getCurrentMark() != null) {
             return null;
         }
-        for (MARK mark : MarkContext.CONTAINER) {
+        for (MARK mark : container) {
             int index = content.indexOf(mark.getStart(), currentPointer);
             if (index < 0) {
                 continue;

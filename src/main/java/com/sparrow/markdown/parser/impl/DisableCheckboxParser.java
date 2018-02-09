@@ -9,12 +9,12 @@ import com.sparrow.markdown.parser.MarkParser;
  * @date 2018/2/6
  */
 public class DisableCheckboxParser implements MarkParser {
-    private String content;
 
     @Override
-    public void parse(MarkContext parser) {
-        return String.format(, this.content);
+    public void parse(MarkContext markContext) {
+        markContext.parse(markContext,this.mark());
     }
+
 
     @Override public MARK mark() {
         return MARK.DISABLE_CHECK_BOX;

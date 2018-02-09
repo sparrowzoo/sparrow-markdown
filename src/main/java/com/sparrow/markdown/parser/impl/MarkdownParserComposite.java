@@ -4,6 +4,8 @@ import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.parser.MarkParser;
 
+import java.util.List;
+
 /**
  * Created by harry on 2018/2/6.
  */
@@ -20,7 +22,8 @@ public class MarkdownParserComposite implements MarkParser {
     @Override
     public void parse(MarkContext markContext) {
         do {
-            markContext.detectStartMark(markContext.isDetectLine());
+            List<MARK> container=markContext.getCurrentMark()==null?MarkContext.CONTAINER:MarkContext.CHILD_MARK_PARSER.get(markContext.getCurrentMark());
+            markContext.detectStartMark(markContext.isDetectLine(),container);
             if (markContext.getCurrentMark() != null) {
                 MarkContext.MARK_PARSER_MAP.get(markContext.getCurrentMark()).parse(markContext);
                 markContext.clearCurrentMark();

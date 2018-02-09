@@ -10,10 +10,9 @@ import com.sparrow.markdown.parser.MarkParser;
  */
 public class ErasureParser implements MarkParser {
 
-    private String content;
     @Override
-    public String parse(MarkContext parser) {
-        return String.format(, content);
+    public void parse(MarkContext markContext) {
+        markContext.parse(markContext,this.mark());
     }
 
     @Override public MARK mark() {
