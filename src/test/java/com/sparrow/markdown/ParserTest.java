@@ -181,7 +181,7 @@ public class ParserTest{
                 "---|---\n" +
                 "r1-1 | r 1-2\n" +
                 "r2-1 | r 2-2\n" +
-                "\n");
+                "\n",null);
         MarkParser markParser=new MarkdownParserComposite();
         markParser.parse(markContext);
     }
