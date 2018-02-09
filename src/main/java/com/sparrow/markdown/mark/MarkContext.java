@@ -176,19 +176,15 @@ public class MarkContext {
         this.detectLine = detectLine;
     }
 
-    public MarkContext parseComplex(int endMarkIndex, MARK mark) {
-        String content = this.content.substring(this.currentPointer, endMarkIndex);
-        MarkContext innerContext = new MarkContext(content, mark.isLine());
-        MarkdownParserComposite.getInstance().parse(innerContext);
-        this.setPointer(endMarkIndex + mark.getEnd().length());
-        return innerContext;
-    }
 
     public void parse(MarkContext markContext, MARK mark) {
         int endMarkIndex = markContext.getContent().indexOf(mark.getEnd(), markContext.getCurrentPointer());
         if (endMarkIndex > 0) {
-            MarkContext innerMarkContext = this.parseComplex(endMarkIndex, mark);
-            markContext.append(String.format(mark.getFormat(), innerMarkContext.getHtml()));
+            String content = this.content.substring(this.currentPointer, endMarkIndex);
+            MarkContext innerContext = new MarkContext(content, mark.isLine());
+            this.setPointer(endMarkIndex + mark.getEnd().length());
+            MarkdownParserComposite.getInstance().parse(innerContext);
+            markContext.append(String.format(mark.getFormat(), innerContext.getHtml()));
             return;
         }
         MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(markContext);
