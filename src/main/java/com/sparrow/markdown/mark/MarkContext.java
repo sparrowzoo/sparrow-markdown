@@ -28,23 +28,10 @@ import java.util.*;
  */
 public class MarkContext {
 
-    private MarkContext(String content, Boolean isLine) {
+    public MarkContext(String content) {
         this.content = content;
         this.currentPointer = 0;
         this.contentLength = this.content.length();
-        this.setDetectLine(isLine);
-    }
-
-    public static MarkContext createLine(String content) {
-        return new MarkContext(content, true);
-    }
-
-    public static MarkContext createBlock(String content) {
-        return new MarkContext(content, false);
-    }
-
-    public static MarkContext createAll(String content) {
-        return new MarkContext(content, null);
     }
 
 
@@ -114,8 +101,11 @@ public class MarkContext {
         CHILD_MARK_PARSER.put(MARK.HYPER_LINK, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.ITALIC));
     }
 
-    private boolean detectLine;
     private int contentLength;
+    /**
+     * 当前mark 的起始指针
+     */
+    private int currentMarkStartPointer;
     /**
      * 当前字符指针
      */
@@ -163,6 +153,13 @@ public class MarkContext {
         return contentLength;
     }
 
+    public int getCurrentMarkStartPointer() {
+        return currentMarkStartPointer;
+    }
+
+    public void setCurrentMarkStartPointer(int currentMarkStartPointer) {
+        this.currentMarkStartPointer = currentMarkStartPointer;
+    }
 
     public String getHtml() {
         return html.toString();
@@ -182,43 +179,34 @@ public class MarkContext {
         return line.toString();
     }
 
-    public boolean isDetectLine() {
-        return detectLine;
-    }
 
-    public void setDetectLine(boolean detectLine) {
-        this.detectLine = detectLine;
-    }
-
-
-    public void parse(MarkContext markContext, MARK mark) {
-        int endMarkIndex = markContext.getContent().indexOf(mark.getEnd(), markContext.getCurrentPointer());
+    public void parse(MARK mark) {
+        int endMarkIndex = this.getContent().indexOf(mark.getEnd(), this.getCurrentMarkStartPointer()+mark.getStart().length());
         if (endMarkIndex > 0) {
-            String content = this.content.substring(this.currentPointer, endMarkIndex);
-            MarkContext innerContext = new MarkContext(content, mark.isLine());
+            String content = this.content.substring(this.currentPointer+mark.getStart().length(), endMarkIndex);
+            MarkContext innerContext = new MarkContext(content);
             this.setPointer(endMarkIndex + mark.getEnd().length());
             MarkdownParserComposite.getInstance().parse(innerContext);
-            markContext.append(String.format(mark.getFormat(), innerContext.getHtml()));
+            this.append(String.format(mark.getFormat(), innerContext.getHtml()));
             return;
         }
-        MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(markContext);
+        MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(this);
     }
 
 
-    public MarkWithIndex detectStartMark(Boolean isLine, List<MARK> container) {
+    public void detectStartMark(List<MARK> container) {
         if (this.getCurrentMark() != null) {
-            return null;
+            return;
         }
         for (MARK mark : container) {
             int index = content.indexOf(mark.getStart(), currentPointer);
             if (index < 0) {
                 continue;
             }
-            if (isLine != null && isLine != mark.isLine()) {
-                continue;
-            }
-            return new MarkWithIndex(mark, index);
+            this.setCurrentMark(mark);
+            this.setCurrentMarkStartPointer(index);
+            return;
         }
-        return null;
+        return;
     }
 }

@@ -13,7 +13,16 @@ public class LiteraryParser implements MarkParser {
 
     @Override
     public void parse(MarkContext markContext) {
-        markContext.parse(markContext,this.mark());
+//        int endMarkIndex = this.getContent().indexOf(mark.getEnd(), this.getCurrentMarkStartPointer()+mark.getStart().length());
+//        if (endMarkIndex > 0) {
+//            String content = this.content.substring(this.currentPointer+mark.getStart().length(), endMarkIndex);
+//            MarkContext innerContext = new MarkContext(content);
+//            this.setPointer(endMarkIndex + mark.getEnd().length());
+//            MarkdownParserComposite.getInstance().parse(innerContext);
+//            this.append(String.format(mark.getFormat(), innerContext.getHtml()));
+//            return;
+//        }
+        //MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(this);
     }
 
 

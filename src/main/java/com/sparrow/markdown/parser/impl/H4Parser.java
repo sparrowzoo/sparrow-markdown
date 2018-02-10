@@ -11,7 +11,7 @@ import com.sparrow.markdown.parser.MarkParser;
 public class H4Parser implements MarkParser {
     @Override
     public void parse(MarkContext markContext) {
-        markContext.parse(markContext, this.mark());
+        markContext.parse(this.mark());
     }
 
     @Override
