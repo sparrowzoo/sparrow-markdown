@@ -8,12 +8,7 @@ import com.sparrow.markdown.parser.MarkParser;
  * @author harry
  * @date 2018/2/6
  */
-public class ErasureParser implements MarkParser {
-
-    @Override
-    public void parse(MarkContext markContext) {
-        markContext.parse(this.mark());
-    }
+public class ErasureParser extends AbstractWithEndTagParser{
 
     @Override public MARK mark() {
         return MARK.ERASURE;

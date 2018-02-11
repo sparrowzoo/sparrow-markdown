@@ -2,7 +2,6 @@ package com.sparrow.markdown.parser.impl;
 
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
-import com.sparrow.markdown.mark.MarkWithIndex;
 import com.sparrow.markdown.parser.MarkParser;
 
 import java.util.List;
@@ -20,19 +19,25 @@ public class MarkdownParserComposite implements MarkParser {
         return instance;
     }
 
+    @Override public int validate(MarkContext mark) {
+        return 1;
+    }
+
     @Override
     public void parse(MarkContext markContext) {
-        List<MARK> container=markContext.getParentMark()==null?MarkContext.CONTAINER:MarkContext.CHILD_MARK_PARSER.get(markContext.getParentMark());
         do {
-             markContext.detectStartMark(container);
+            //detect start mark
+            markContext.detectStartMark(markContext.getParentMark());
             if (markContext.getCurrentMark() != null) {
                 MarkContext.MARK_PARSER_MAP.get(markContext.getCurrentMark()).parse(markContext);
                 markContext.clearCurrentMark();
                 continue;
             }
             markContext.setCurrentMark(MARK.LITERARY);
+            MarkParser literaryParse=MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY);
+            literaryParse.validate(markContext);
             //按文本处理
-            MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(markContext);
+            literaryParse.parse(markContext);
         }
         while (markContext.getCurrentPointer() < markContext.getContentLength());
     }

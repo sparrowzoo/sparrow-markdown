@@ -16,12 +16,29 @@
  */
 package com.sparrow.markdown.mark;
 
-import com.sparrow.constant.CONSTANT;
-import com.sparrow.constant.magic.SYMBOL;
 import com.sparrow.markdown.parser.MarkParser;
-import com.sparrow.markdown.parser.impl.*;
-
-import java.util.*;
+import com.sparrow.markdown.parser.impl.BoldParser;
+import com.sparrow.markdown.parser.impl.CheckboxParser;
+import com.sparrow.markdown.parser.impl.CodeParser;
+import com.sparrow.markdown.parser.impl.DisableCheckboxParser;
+import com.sparrow.markdown.parser.impl.ErasureParser;
+import com.sparrow.markdown.parser.impl.H1Parser;
+import com.sparrow.markdown.parser.impl.H2Parser;
+import com.sparrow.markdown.parser.impl.H3Parser;
+import com.sparrow.markdown.parser.impl.H4Parser;
+import com.sparrow.markdown.parser.impl.H5Parser;
+import com.sparrow.markdown.parser.impl.H6Parser;
+import com.sparrow.markdown.parser.impl.HighlightParser;
+import com.sparrow.markdown.parser.impl.HorizontalLineParser;
+import com.sparrow.markdown.parser.impl.ItalicParser;
+import com.sparrow.markdown.parser.impl.LiteraryParser;
+import com.sparrow.markdown.parser.impl.QuoteParser;
+import com.sparrow.markdown.parser.impl.UnderlineParser;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author by harry
@@ -33,7 +50,6 @@ public class MarkContext {
         this.currentPointer = 0;
         this.contentLength = this.content.length();
     }
-
 
     private static final int MARK_COUNT = 32;
     public static final List<MARK> CONTAINER = new ArrayList<MARK>(MARK_COUNT);
@@ -62,7 +78,6 @@ public class MarkContext {
         CONTAINER.add(MARK.HIGHLIGHT);
         CONTAINER.add(MARK.UNDERLINE);
         CONTAINER.add(MARK.ERASURE);
-
 
         MARK_PARSER_MAP.put(MARK.H1, new H1Parser());
         MARK_PARSER_MAP.put(MARK.H2, new H2Parser());
@@ -97,7 +112,7 @@ public class MarkContext {
         CHILD_MARK_PARSER.put(MARK.UNDERLINE, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.BOLD, Arrays.asList(MARK.UNDERLINE, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.ITALIC, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.ERASURE, Arrays.asList(MARK.UNDERLINE, MARK.BOLD,MARK.ITALIC, MARK.HIGHLIGHT, MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.ERASURE, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ITALIC, MARK.HIGHLIGHT, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.IMAGE, null);
         CHILD_MARK_PARSER.put(MARK.HYPER_LINK, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.ITALIC));
 
@@ -105,13 +120,10 @@ public class MarkContext {
 
     private int contentLength;
     /**
-     * 当前mark 的起始指针
-     */
-    private int currentMarkStartPointer;
-    /**
      * 当前字符指针
      */
     private int currentPointer;
+    private int endPointer;
     private String content = null;
     private StringBuilder html = new StringBuilder(8000);
     /**
@@ -157,14 +169,6 @@ public class MarkContext {
         return contentLength;
     }
 
-    public int getCurrentMarkStartPointer() {
-        return currentMarkStartPointer;
-    }
-
-    public void setCurrentMarkStartPointer(int currentMarkStartPointer) {
-        this.currentMarkStartPointer = currentMarkStartPointer;
-    }
-
     public MARK getExceptMark() {
         return exceptMark;
     }
@@ -200,56 +204,32 @@ public class MarkContext {
     }
 
 
-    public void parse(MARK mark) {
-        int startIndex=this.getCurrentMarkStartPointer()+mark.getStart().length();
-        int endMarkIndex = this.getContent().indexOf(mark.getEnd(),startIndex);
-        if (endMarkIndex > startIndex) {
-            String content = this.content.substring(this.currentPointer+mark.getStart().length(), endMarkIndex);
-            //如果包含复杂结构，至少需要两个字符
-            if(content.length()<=2||MarkContext.CHILD_MARK_PARSER.get(mark)==null){
-                this.append(String.format(mark.getFormat(),content));
-                this.setPointer(endMarkIndex + mark.getEnd().length());
-                return;
-            }
-            MarkContext innerContext = new MarkContext(content);
-            innerContext.setParentMark(mark);
-            MarkdownParserComposite.getInstance().parse(innerContext);
-            this.append(String.format(mark.getFormat(),innerContext.getHtml()));
-            this.setPointer(endMarkIndex + mark.getEnd().length());
-            return;
-        }
-        this.setExceptMark(mark);
-        MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(this);
-    }
 
-    public int detectStartMarkAsPreviousEnd(List<MARK> container,MARK exceptMark) {
-        if (this.getCurrentMark() == null) {
-            return -1;
-        }
-        int minIndex=content.length();
-        for (MARK mark : container) {
-            int index = content.indexOf(mark.getStart(), currentPointer);
-            if (index>=currentPointer&&index<minIndex&&!mark.equals(exceptMark)) {
-                System.out.println(mark);
-                minIndex=index;
-            }
-        }
-        return minIndex;
-    }
 
-    public void detectStartMark(List<MARK> container) {
+    public void detectStartMark(MARK parentMark) {
         if (this.getCurrentMark() != null) {
             return;
         }
+        List<MARK> container = parentMark == null ? CONTAINER : CHILD_MARK_PARSER.get(parentMark);
 
         for (MARK mark : container) {
-            int index = content.indexOf(mark.getStart(), currentPointer);
-            if (index!=currentPointer) {
+            if (!content.startsWith(mark.getStart(), currentPointer)) {
                 continue;
             }
-            this.setCurrentMark(mark);
-            this.setCurrentMarkStartPointer(index);
-            return;
+            int endIndex = MARK_PARSER_MAP.get(mark).validate(this);
+            if (endIndex > -1) {
+                this.setCurrentMark(mark);
+                this.setEndPointer(endIndex);
+                return;
+            }
         }
+    }
+
+    public int getEndPointer() {
+        return endPointer;
+    }
+
+    public void setEndPointer(int endPointer) {
+        this.endPointer = endPointer;
     }
 }

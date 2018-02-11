@@ -9,6 +9,10 @@ import com.sparrow.markdown.parser.MarkParser;
  * @date 2018/2/6
  */
 public class HorizontalLineParser implements MarkParser {
+    @Override public int validate(MarkContext mark) {
+        return 0;
+    }
+
     @Override
     public void parse(MarkContext markContext) {
         String title= markContext.readLine(markContext.getCurrentPointer()+1);

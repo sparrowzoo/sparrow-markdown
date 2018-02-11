@@ -7,11 +7,7 @@ import com.sparrow.markdown.parser.MarkParser;
 /**
  * Created by harry on 2018/2/7.
  */
-public class TabParser implements MarkParser {
-    @Override
-    public void parse(MarkContext markContext) {
-        markContext.parse(this.mark());
-    }
+public class TabParser extends AbstractWithEndTagParser{
 
     @Override
     public MARK mark() {
