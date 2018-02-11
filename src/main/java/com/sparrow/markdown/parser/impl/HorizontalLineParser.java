@@ -11,7 +11,16 @@ import com.sparrow.markdown.parser.MarkParser;
 public class HorizontalLineParser implements MarkParser {
     @Override
     public void parse(MarkContext markContext) {
-        markContext.parse(this.mark());
+        String title= markContext.readLine(markContext.getCurrentPointer()+1);
+        String line=markContext.readLine(markContext.getCurrentPointer()+title.length());
+        if(line.equals(this.mark().getEnd())){
+            markContext.append(String.format(this.mark().getFormat(),title));
+            markContext.clearCurrentMark();
+            markContext.setPointer(markContext.getCurrentPointer()+title.length()+line.length());
+            return;
+        }
+        markContext.setExceptMark(this.mark());
+        MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(markContext);
     }
 
 

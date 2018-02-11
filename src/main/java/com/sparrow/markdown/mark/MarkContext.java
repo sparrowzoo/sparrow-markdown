@@ -54,8 +54,8 @@ public class MarkContext {
         CONTAINER.add(MARK.ITALIC);
 
         CONTAINER.add(MARK.CODE);
-        CONTAINER.add(MARK.HORIZONTAL_LINE);
         CONTAINER.add(MARK.QUOTE);
+        CONTAINER.add(MARK.HORIZONTAL_LINE);
         CONTAINER.add(MARK.CHECK_BOX);
         CONTAINER.add(MARK.DISABLE_CHECK_BOX);
 
@@ -97,8 +97,10 @@ public class MarkContext {
         CHILD_MARK_PARSER.put(MARK.UNDERLINE, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.BOLD, Arrays.asList(MARK.UNDERLINE, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.ITALIC, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.ERASURE, Arrays.asList(MARK.UNDERLINE, MARK.BOLD,MARK.ITALIC, MARK.HIGHLIGHT, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.IMAGE, null);
         CHILD_MARK_PARSER.put(MARK.HYPER_LINK, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.ITALIC));
+
     }
 
     private int contentLength;
@@ -116,6 +118,8 @@ public class MarkContext {
      * 当前mark
      */
     private MARK currentMark;
+    private MARK parentMark;
+    private MARK exceptMark;
 
     public int getCurrentPointer() {
         return currentPointer;
@@ -161,6 +165,14 @@ public class MarkContext {
         this.currentMarkStartPointer = currentMarkStartPointer;
     }
 
+    public MARK getExceptMark() {
+        return exceptMark;
+    }
+
+    public void setExceptMark(MARK exceptMark) {
+        this.exceptMark = exceptMark;
+    }
+
     public String getHtml() {
         return html.toString();
     }
@@ -169,11 +181,19 @@ public class MarkContext {
         this.html.append(html);
     }
 
-    public String readLine() {
+    public MARK getParentMark() {
+        return parentMark;
+    }
+
+    public void setParentMark(MARK parentMark) {
+        this.parentMark = parentMark;
+    }
+
+    public String readLine(int currentPointer) {
         StringBuilder line = new StringBuilder(100);
         char enter = '\n';
         char current;
-        while ((current = this.content.charAt(currentPointer)) != enter) {
+        while ((current = this.content.charAt(currentPointer++)) != enter) {
             line.append(current);
         }
         return line.toString();
@@ -181,32 +201,55 @@ public class MarkContext {
 
 
     public void parse(MARK mark) {
-        int endMarkIndex = this.getContent().indexOf(mark.getEnd(), this.getCurrentMarkStartPointer()+mark.getStart().length());
-        if (endMarkIndex > 0) {
+        int startIndex=this.getCurrentMarkStartPointer()+mark.getStart().length();
+        int endMarkIndex = this.getContent().indexOf(mark.getEnd(),startIndex);
+        if (endMarkIndex > startIndex) {
             String content = this.content.substring(this.currentPointer+mark.getStart().length(), endMarkIndex);
+            //如果包含复杂结构，至少需要两个字符
+            if(content.length()<=2||MarkContext.CHILD_MARK_PARSER.get(mark)==null){
+                this.append(String.format(mark.getFormat(),content));
+                this.setPointer(endMarkIndex + mark.getEnd().length());
+                return;
+            }
             MarkContext innerContext = new MarkContext(content);
-            this.setPointer(endMarkIndex + mark.getEnd().length());
+            innerContext.setParentMark(mark);
             MarkdownParserComposite.getInstance().parse(innerContext);
-            this.append(String.format(mark.getFormat(), innerContext.getHtml()));
+            this.append(String.format(mark.getFormat(),innerContext.getHtml()));
+            this.setPointer(endMarkIndex + mark.getEnd().length());
             return;
         }
+        this.setExceptMark(mark);
         MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(this);
     }
 
+    public int detectStartMarkAsPreviousEnd(List<MARK> container,MARK exceptMark) {
+        if (this.getCurrentMark() == null) {
+            return -1;
+        }
+        int minIndex=content.length();
+        for (MARK mark : container) {
+            int index = content.indexOf(mark.getStart(), currentPointer);
+            if (index>=currentPointer&&index<minIndex&&!mark.equals(exceptMark)) {
+                System.out.println(mark);
+                minIndex=index;
+            }
+        }
+        return minIndex;
+    }
 
     public void detectStartMark(List<MARK> container) {
         if (this.getCurrentMark() != null) {
             return;
         }
+
         for (MARK mark : container) {
             int index = content.indexOf(mark.getStart(), currentPointer);
-            if (index < 0) {
+            if (index!=currentPointer) {
                 continue;
             }
             this.setCurrentMark(mark);
             this.setCurrentMarkStartPointer(index);
             return;
         }
-        return;
     }
 }

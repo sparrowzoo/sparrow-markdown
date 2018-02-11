@@ -22,17 +22,19 @@ public class MarkdownParserComposite implements MarkParser {
 
     @Override
     public void parse(MarkContext markContext) {
+        List<MARK> container=markContext.getParentMark()==null?MarkContext.CONTAINER:MarkContext.CHILD_MARK_PARSER.get(markContext.getParentMark());
         do {
-            List<MARK> container=markContext.getCurrentMark()==null?MarkContext.CONTAINER:MarkContext.CHILD_MARK_PARSER.get(markContext.getCurrentMark());
-            markContext.detectStartMark(container);
+             markContext.detectStartMark(container);
             if (markContext.getCurrentMark() != null) {
                 MarkContext.MARK_PARSER_MAP.get(markContext.getCurrentMark()).parse(markContext);
                 markContext.clearCurrentMark();
                 continue;
             }
+            markContext.setCurrentMark(MARK.LITERARY);
+            //按文本处理
             MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY).parse(markContext);
         }
-        while (markContext.getCurrentPointer() <= markContext.getContentLength());
+        while (markContext.getCurrentPointer() < markContext.getContentLength());
     }
 
     @Override
