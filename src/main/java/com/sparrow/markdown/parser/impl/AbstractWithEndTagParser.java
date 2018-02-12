@@ -17,6 +17,7 @@
 package com.sparrow.markdown.parser.impl;
 
 import com.sparrow.markdown.mark.MarkContext;
+import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.parser.MarkParser;
 
 /**
@@ -24,30 +25,31 @@ import com.sparrow.markdown.parser.MarkParser;
  */
 public abstract class AbstractWithEndTagParser implements MarkParser {
 
-    @Override public int validate(MarkContext mark) {
-        int startIndex = mark.getCurrentPointer() + this.mark().getStart().length();
-        int endMarkIndex = mark.getContent().indexOf(this.mark().getEnd(), startIndex);
+    @Override public MarkEntity validate(MarkContext markContext) {
+        int startIndex = markContext.getCurrentPointer() + this.mark().getStart().length();
+        int endMarkIndex = markContext.getContent().indexOf(this.mark().getEnd(), startIndex);
         if (endMarkIndex > startIndex) {
-            return endMarkIndex;
+            String content = markContext.getContent().substring(markContext.getCurrentPointer()
+                    + this.mark().getStart().length(), endMarkIndex);
+            MarkEntity markEntity= MarkEntity.createCurrentMark(this.mark(),endMarkIndex);
+            markEntity.setContent(content);
+            return markEntity;
         }
-        return -1;
+        return null;
     }
 
     @Override public void parse(MarkContext markContext) {
-        String content = markContext.getContent().substring(markContext.getCurrentPointer()
-            + this.mark().getStart().length(), markContext.getEndPointer() - this.mark().getEnd().length());
+        String content=markContext.getCurrentMark().getContent();
         //如果包含复杂结构，至少需要两个字符
         if (content.length() <= 2 || MarkContext.CHILD_MARK_PARSER.get(this.mark()) == null) {
             markContext.append(String.format(this.mark().getFormat(), content));
-            markContext.setPointer(markContext.getEndPointer());
-            markContext.setEndPointer(-1);
+            markContext.setPointer(markContext.getCurrentMark().getEnd()+this.mark().getEnd().length());
             return;
         }
         MarkContext innerContext = new MarkContext(content);
         innerContext.setParentMark(this.mark());
         MarkdownParserComposite.getInstance().parse(innerContext);
         markContext.append(String.format(this.mark().getFormat(), innerContext.getHtml()));
-        markContext.setPointer(markContext.getEndPointer());
-        markContext.setEndPointer(-1);
+        markContext.setPointer(markContext.getCurrentMark().getEnd()+this.mark().getEnd().length());
     }
 }

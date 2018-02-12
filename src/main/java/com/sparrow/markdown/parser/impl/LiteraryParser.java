@@ -1,8 +1,11 @@
 package com.sparrow.markdown.parser.impl;
 
+import com.sparrow.constant.magic.DIGIT;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
+import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.parser.MarkParser;
+
 import java.util.List;
 
 /**
@@ -10,32 +13,48 @@ import java.util.List;
  */
 public class LiteraryParser implements MarkParser {
 
-    @Override public int validate(MarkContext markContext) {
-        if (markContext.getCurrentMark() == null) {
-            return -1;
-        }
-        int currentPointer=markContext.getCurrentPointer();
-        int minIndex = markContext.getContent().length();
+    @Override
+    public MarkEntity validate(MarkContext markContext) {
+        int currentPointer = markContext.getCurrentPointer();
+        MarkEntity nextMark=null;
+        int minIndex=markContext.getContentLength();
         for (MARK mark : MarkContext.CONTAINER) {
-            if (mark.equals(this.mark())) {
-                continue;
-            }
-            int index = markContext.getContent().indexOf(mark.getStart(), markContext.getCurrentPointer() + 1);
-            markContext.setPointer(index);
-            if (index < minIndex && MarkContext.MARK_PARSER_MAP.get(mark).validate(markContext) > 0) {
-                System.out.println(mark);
-                minIndex = index;
+            markContext.setPointer(currentPointer+1);
+            while (markContext.getCurrentPointer() < markContext.getContentLength()) {
+                if (mark.equals(this.mark())) {
+                    break;
+                }
+                int start = markContext.getContent().indexOf(mark.getStart(), markContext.getCurrentPointer());
+                if (start < markContext.getCurrentPointer()) {
+                    break;
+                }
+                if (start >= minIndex) {
+                    break;
+                }
+                markContext.setPointer(start);
+                MarkEntity markEntity=MarkContext.MARK_PARSER_MAP.get(mark).validate(markContext);
+                if (markEntity!=null) {
+                    System.out.println(mark);
+                    nextMark=markEntity;
+                    minIndex = start;
+                }
+                if (start == currentPointer + 1) {
+                    markContext.setPointer(currentPointer);
+                    markContext.setNextMark(nextMark);
+                    return MarkEntity.createCurrentMark(this.mark(),minIndex);
+                }
+                markContext.skipPointer(mark.getStart().length());
             }
         }
         markContext.setPointer(currentPointer);
-        return minIndex;
+        markContext.setNextMark(nextMark);
+        return MarkEntity.createCurrentMark(this.mark(),minIndex);
     }
 
     @Override
     public void parse(MarkContext markContext) {
-        int startIndex = markContext.getCurrentPointer();
-        String content = markContext.getContent().substring(startIndex, markContext.getEndPointer());
-        markContext.setPointer(markContext.getEndPointer());
+        String content = markContext.getContent().substring(markContext.getCurrentPointer(), markContext.getCurrentMark().getEnd());
+        markContext.setPointer(markContext.getCurrentMark().getEnd());
         markContext.append(String.format(this.mark().getFormat(), content));
         markContext.clearCurrentMark();
     }
