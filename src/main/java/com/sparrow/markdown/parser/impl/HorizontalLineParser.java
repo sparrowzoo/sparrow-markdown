@@ -5,12 +5,15 @@ import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.parser.MarkParser;
+import com.sparrow.utility.StringUtility;
 
 /**
  * @author harry
  * @date 2018/2/6
  */
-public class HorizontalLineParser implements MarkParser {
+public class HorizontalLineParser extends AbstractWithEndTagParser {
+
+
     @Override
     public MarkEntity validate(MarkContext markContext) {
         String title = markContext.readLine(markContext.getCurrentPointer() + 1);

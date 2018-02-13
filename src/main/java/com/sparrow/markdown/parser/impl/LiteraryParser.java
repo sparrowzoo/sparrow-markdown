@@ -13,6 +13,10 @@ import java.util.List;
  */
 public class LiteraryParser implements MarkParser {
 
+    @Override public boolean detectStartMark(MarkContext markContext) {
+        return true;
+    }
+
     @Override
     public MarkEntity validate(MarkContext markContext) {
         int currentPointer = markContext.getCurrentPointer();
@@ -37,12 +41,14 @@ public class LiteraryParser implements MarkParser {
                     System.out.println(mark);
                     nextMark=markEntity;
                     minIndex = start;
+
+                    if (start == currentPointer + 1) {
+                        markContext.setPointer(currentPointer);
+                        markContext.setNextMark(nextMark);
+                        return MarkEntity.createCurrentMark(this.mark(),minIndex);
+                    }
                 }
-                if (start == currentPointer + 1) {
-                    markContext.setPointer(currentPointer);
-                    markContext.setNextMark(nextMark);
-                    return MarkEntity.createCurrentMark(this.mark(),minIndex);
-                }
+
                 markContext.skipPointer(mark.getStart().length());
             }
         }
@@ -55,7 +61,7 @@ public class LiteraryParser implements MarkParser {
     public void parse(MarkContext markContext) {
         String content = markContext.getContent().substring(markContext.getCurrentPointer(), markContext.getCurrentMark().getEnd());
         markContext.setPointer(markContext.getCurrentMark().getEnd());
-        markContext.append(String.format(this.mark().getFormat(), content));
+        markContext.append(String.format(this.mark().getFormat(), content.replaceAll("\n+","<br/>")));
         markContext.clearCurrentMark();
     }
 

@@ -1,5 +1,7 @@
 package com.sparrow.markdown.mark;
 
+import java.util.List;
+
 /**
  * Created by harry on 2018/2/12.
  */
@@ -26,6 +28,11 @@ public class MarkEntity {
     private String content;
     private String title;
     private String url;
+
+    private String[]titleArray;
+    private List<String[]> tdList;
+
+    private List<TagListEntity> tagListEntities;
 
     public MARK getMark() {
         return mark;
@@ -75,5 +82,27 @@ public class MarkEntity {
         this.content = content;
     }
 
+    public String[] getTitleArray() {
+        return titleArray;
+    }
 
+    public void setTitleArray(String[] titleArray) {
+        this.titleArray = titleArray;
+    }
+
+    public List<String[]> getTdList() {
+        return tdList;
+    }
+
+    public void setTdList(List<String[]> tdList) {
+        this.tdList = tdList;
+    }
+
+    public List<TagListEntity> getTagListEntities() {
+        return tagListEntities;
+    }
+
+    public void setTagListEntities(List<TagListEntity> tagListEntities) {
+        this.tagListEntities = tagListEntities;
+    }
 }

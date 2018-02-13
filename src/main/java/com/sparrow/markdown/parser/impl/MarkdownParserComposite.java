@@ -1,12 +1,9 @@
 package com.sparrow.markdown.parser.impl;
 
-import com.sparrow.constant.magic.DIGIT;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.parser.MarkParser;
-
-import java.util.List;
 
 /**
  * Created by harry on 2018/2/6.
@@ -19,6 +16,10 @@ public class MarkdownParserComposite implements MarkParser {
 
     public static MarkdownParserComposite getInstance() {
         return instance;
+    }
+
+    @Override public boolean detectStartMark(MarkContext markContext) {
+        return false;
     }
 
     @Override

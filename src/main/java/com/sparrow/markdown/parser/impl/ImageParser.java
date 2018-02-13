@@ -14,6 +14,6 @@ import com.sparrow.markdown.parser.MarkParser;
 public class ImageParser extends AbstractWithUrlParser {
     @Override
     public MARK mark() {
-        return MARK.HYPER_LINK;
+        return MARK.IMAGE;
     }
 }

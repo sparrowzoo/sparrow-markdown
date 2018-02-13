@@ -8,7 +8,7 @@ import com.sparrow.markdown.parser.MarkParser;
 /**
  * Created by harry on 2018/2/12.
  */
-public abstract class AbstractWithUrlParser implements MarkParser{
+public abstract class AbstractWithUrlParser extends AbstractWithEndTagParser implements MarkParser{
     @Override
     public MarkEntity validate(MarkContext markContext) {
         int startIndex = markContext.getCurrentPointer() + this.mark().getStart().length();
@@ -38,7 +38,7 @@ public abstract class AbstractWithUrlParser implements MarkParser{
         String utl=markContext.getCurrentMark().getUrl();
 
         //如果包含复杂结构，至少需要两个字符
-        if (title.length() <= 2) {
+        if (title.length() <= 2||MarkContext.CHILD_MARK_PARSER.get(markContext.getCurrentMark().getMark())==null) {
             markContext.append(String.format(this.mark().getFormat(),utl, title));
             markContext.setPointer(markContext.getCurrentMark().getEnd()+this.mark().getEnd().length());
             markContext.clearCurrentMark();

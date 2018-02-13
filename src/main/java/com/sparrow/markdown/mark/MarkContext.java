@@ -16,9 +16,11 @@
  */
 package com.sparrow.markdown.mark;
 
+import com.sparrow.constant.CONSTANT;
 import com.sparrow.markdown.parser.MarkParser;
 import com.sparrow.markdown.parser.impl.*;
 
+import com.sparrow.utility.StringUtility;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,7 +33,7 @@ import java.util.Map;
 public class MarkContext {
 
     public MarkContext(String content) {
-        this.content = content;
+        this.content = CONSTANT.ENTER_TEXT_N + content;
         this.currentPointer = 0;
         this.contentLength = this.content.length();
     }
@@ -40,11 +42,23 @@ public class MarkContext {
     public static final List<MARK> CONTAINER = new ArrayList<MARK>(MARK_COUNT);
     public static final Map<MARK, MarkParser> MARK_PARSER_MAP = new HashMap<MARK, MarkParser>(MARK_COUNT);
     public static final Map<MARK, List<MARK>> CHILD_MARK_PARSER = new HashMap<MARK, List<MARK>>(MARK_COUNT);
+    public static final List<MARK> BORROWABLE_BLANK = new ArrayList<MARK>(MARK_COUNT);
 
     /**
      * sort by key length
      */
     static {
+        BORROWABLE_BLANK.add(MARK.H1);
+        BORROWABLE_BLANK.add(MARK.H2);
+        BORROWABLE_BLANK.add(MARK.H3);
+        BORROWABLE_BLANK.add(MARK.H4);
+        BORROWABLE_BLANK.add(MARK.H5);
+        BORROWABLE_BLANK.add(MARK.H6);
+        BORROWABLE_BLANK.add(MARK.QUOTE);
+        BORROWABLE_BLANK.add(MARK.CHECK_BOX);
+        BORROWABLE_BLANK.add(MARK.DISABLE_CHECK_BOX);
+        BORROWABLE_BLANK.add(MARK.TABLE);
+
         CONTAINER.add(MARK.H6);
         CONTAINER.add(MARK.H5);
         CONTAINER.add(MARK.H4);
@@ -55,6 +69,7 @@ public class MarkContext {
         CONTAINER.add(MARK.ITALIC);
 
         CONTAINER.add(MARK.CODE);
+        CONTAINER.add(MARK.TAB);
         CONTAINER.add(MARK.QUOTE);
         CONTAINER.add(MARK.HORIZONTAL_LINE);
         CONTAINER.add(MARK.CHECK_BOX);
@@ -65,6 +80,9 @@ public class MarkContext {
         CONTAINER.add(MARK.ERASURE);
         CONTAINER.add(MARK.HYPER_LINK);
         CONTAINER.add(MARK.IMAGE);
+        CONTAINER.add(MARK.CODE);
+        CONTAINER.add(MARK.TABLE);
+        CONTAINER.add(MARK.NUMBER_LIST);
 
         MARK_PARSER_MAP.put(MARK.H1, new H1Parser());
         MARK_PARSER_MAP.put(MARK.H2, new H2Parser());
@@ -85,6 +103,9 @@ public class MarkContext {
         MARK_PARSER_MAP.put(MARK.BOLD, new BoldParser());
         MARK_PARSER_MAP.put(MARK.HYPER_LINK, new HyperLinkParser());
         MARK_PARSER_MAP.put(MARK.IMAGE, new ImageParser());
+        MARK_PARSER_MAP.put(MARK.TAB, new TabParser());
+        MARK_PARSER_MAP.put(MARK.CODE, new CodeParser());
+        MARK_PARSER_MAP.put(MARK.TABLE, new TableParser());
 
         CHILD_MARK_PARSER.put(MARK.H1, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.H2, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
@@ -94,18 +115,18 @@ public class MarkContext {
         CHILD_MARK_PARSER.put(MARK.H6, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.HORIZONTAL_LINE, null);
         CHILD_MARK_PARSER.put(MARK.QUOTE, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.CHECK_BOX, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.DISABLE_CHECK_BOX, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.TAB, null);
+        CHILD_MARK_PARSER.put(MARK.CHECK_BOX, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.DISABLE_CHECK_BOX, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.CODE, null);
-        CHILD_MARK_PARSER.put(MARK.HIGHLIGHT, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.UNDERLINE, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.BOLD, Arrays.asList(MARK.UNDERLINE, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.ITALIC, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK));
-        CHILD_MARK_PARSER.put(MARK.ERASURE, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ITALIC, MARK.HIGHLIGHT, MARK.HYPER_LINK));
+        CHILD_MARK_PARSER.put(MARK.HIGHLIGHT, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HYPER_LINK, MARK.IMAGE));
+        CHILD_MARK_PARSER.put(MARK.UNDERLINE, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK, MARK.IMAGE));
+        CHILD_MARK_PARSER.put(MARK.BOLD, Arrays.asList(MARK.UNDERLINE, MARK.ITALIC, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK, MARK.IMAGE));
+        CHILD_MARK_PARSER.put(MARK.ITALIC, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.HYPER_LINK, MARK.IMAGE));
+        CHILD_MARK_PARSER.put(MARK.ERASURE, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ITALIC, MARK.HIGHLIGHT, MARK.HYPER_LINK, MARK.IMAGE));
         CHILD_MARK_PARSER.put(MARK.IMAGE, null);
-        CHILD_MARK_PARSER.put(MARK.HYPER_LINK, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.ITALIC));
-        CHILD_MARK_PARSER.put(MARK.IMAGE, null);
-
+        CHILD_MARK_PARSER.put(MARK.TABLE, null);
+        CHILD_MARK_PARSER.put(MARK.HYPER_LINK, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.ITALIC, MARK.IMAGE));
     }
 
     private int contentLength;
@@ -117,7 +138,16 @@ public class MarkContext {
     private MarkEntity currentMark;
     private MarkEntity nextMark;
     private int currentPointer;
+    private int detectingMarkStartPointer;
     private MARK parentMark;
+
+    public int getDetectingMarkStartPointer() {
+        return detectingMarkStartPointer;
+    }
+
+    public void setDetectingMarkStartPointer(int detectingMarkStartPointer) {
+        this.detectingMarkStartPointer = detectingMarkStartPointer;
+    }
 
     public int getCurrentPointer() {
         return currentPointer;
@@ -196,26 +226,17 @@ public class MarkContext {
         return line.toString();
     }
 
-
     public void detectStartMark(MARK parentMark) {
         if (this.getCurrentMark() != null) {
             return;
         }
         List<MARK> container = parentMark == null ? CONTAINER : CHILD_MARK_PARSER.get(parentMark);
-
         for (MARK mark : container) {
-
-            if (!content.startsWith(mark.getStart(), currentPointer)) {
-                //H开头允许向前借一位(与上一个回车共用)
-                if (mark.name().startsWith("H")) {
-                    currentPointer -= 1;
-                    if (!content.startsWith(mark.getStart(), currentPointer)) {
-                        currentPointer += 1;
-                        continue;
-                    }
-                }
+            MarkParser markParser = MARK_PARSER_MAP.get(mark);
+            if (!markParser.detectStartMark(this)) {
+                continue;
             }
-            MarkEntity markEntity = MARK_PARSER_MAP.get(mark).validate(this);
+            MarkEntity markEntity = markParser.validate(this);
             if (markEntity != null) {
                 this.setCurrentMark(markEntity);
                 return;
