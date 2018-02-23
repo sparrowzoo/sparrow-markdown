@@ -21,14 +21,16 @@ public class LiteraryParser implements MarkParser {
     public MarkEntity validate(MarkContext markContext) {
         int currentPointer = markContext.getCurrentPointer();
         MarkEntity nextMark=null;
+
         int minIndex=markContext.getContentLength();
+        String innerContent=markContext.getContent();
         for (MARK mark : MarkContext.CONTAINER) {
             markContext.setPointer(currentPointer+1);
-            while (markContext.getCurrentPointer() < markContext.getContentLength()) {
+            while (markContext.getCurrentPointer() < innerContent.length()) {
                 if (mark.equals(this.mark())) {
                     break;
                 }
-                int start = markContext.getContent().indexOf(mark.getStart(), markContext.getCurrentPointer());
+                int start = innerContent.indexOf(mark.getStart(), markContext.getCurrentPointer());
                 if (start < markContext.getCurrentPointer()) {
                     break;
                 }
@@ -42,6 +44,8 @@ public class LiteraryParser implements MarkParser {
                     nextMark=markEntity;
                     minIndex = start;
 
+                    innerContent=innerContent.substring(0,minIndex);
+                    //多一个标签至少需要2个字符
                     if (start == currentPointer + 1) {
                         markContext.setPointer(currentPointer);
                         markContext.setNextMark(nextMark);

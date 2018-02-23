@@ -16,8 +16,7 @@
  */
 package com.sparrow.markdown.parser.impl;
 
-import com.sparrow.constant.magic.DIGIT;
-import com.sparrow.markdown.mark.MARK;
+import com.sparrow.constant.magic.CHAR_SYMBOL;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.parser.MarkParser;
@@ -40,13 +39,13 @@ public abstract class AbstractWithEndTagParser implements MarkParser {
         if (!BORROWABLE_BLANK.contains(this.mark())) {
             return false;
         }
-        //for next -=1 is not NEGATIVE
+        //for next -=1 can't not be NEGATIVE
         if (currentPointer < 1) {
             return false;
         }
         currentPointer -= 1;
         //borrow blank so first latter must be \n
-        if (content.charAt(currentPointer) != '\n') {
+        if (content.charAt(currentPointer) != CHAR_SYMBOL.ENTER) {
             return false;
         }
         //if borrow blank later although not equal then not match
@@ -62,7 +61,7 @@ public abstract class AbstractWithEndTagParser implements MarkParser {
         if (endMarkIndex <= 1) {
             return null;
         }
-        if (markContext.getContent().charAt(startIndex) == '\n' || markContext.getContent().charAt(endMarkIndex - 1) == '\n') {
+        if (markContext.getContent().charAt(startIndex) == CHAR_SYMBOL.ENTER || markContext.getContent().charAt(endMarkIndex - 1) == '\n') {
             return null;
         }
 
@@ -90,10 +89,9 @@ public abstract class AbstractWithEndTagParser implements MarkParser {
             }
             return;
         }
-        MarkContext innerContext = new MarkContext(content);
-        innerContext.setParentMark(this.mark());
-        MarkdownParserComposite.getInstance().parse(innerContext);
-        markContext.append(String.format(this.mark().getFormat(), innerContext.getHtml()));
+
+        String innerHTML = markContext.getInnerHtml(this.mark(),content);
+        markContext.append(String.format(this.mark().getFormat(), innerHTML));
         markContext.setPointer(markContext.getCurrentMark().getEnd() + this.mark().getEnd().length());
     }
 }

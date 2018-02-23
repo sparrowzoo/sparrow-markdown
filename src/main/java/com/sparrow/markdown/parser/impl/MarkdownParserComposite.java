@@ -1,5 +1,8 @@
 package com.sparrow.markdown.parser.impl;
 
+import com.sparrow.constant.CONSTANT;
+import com.sparrow.constant.magic.CHAR_SYMBOL;
+import com.sparrow.constant.magic.SYMBOL;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
@@ -29,6 +32,10 @@ public class MarkdownParserComposite implements MarkParser {
 
     @Override
     public void parse(MarkContext markContext) {
+        //if first char is not \n then fill
+        if (markContext.getParentMark() == null&&markContext.getContent().charAt(0)!= CHAR_SYMBOL.ENTER) {
+            markContext.setContent(CHAR_SYMBOL.ENTER + markContext.getContent());
+        }
         do {
             //detect start mark
             if (markContext.getNextMark() != null) {
@@ -45,7 +52,7 @@ public class MarkdownParserComposite implements MarkParser {
 
             MarkParser literaryParse = MarkContext.MARK_PARSER_MAP.get(MARK.LITERARY);
             MarkEntity markEntity = literaryParse.validate(markContext);
-            if (markEntity!=null) {
+            if (markEntity != null) {
                 markContext.setCurrentMark(markEntity);
                 //按文本处理
                 literaryParse.parse(markContext);

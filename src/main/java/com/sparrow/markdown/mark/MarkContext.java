@@ -17,6 +17,7 @@
 package com.sparrow.markdown.mark;
 
 import com.sparrow.constant.CONSTANT;
+import com.sparrow.constant.REGEX;
 import com.sparrow.markdown.parser.MarkParser;
 import com.sparrow.markdown.parser.impl.*;
 
@@ -33,7 +34,7 @@ import java.util.Map;
 public class MarkContext {
 
     public MarkContext(String content) {
-        this.content = CONSTANT.ENTER_TEXT_N + content;
+        this.content = content;
         this.currentPointer = 0;
         this.contentLength = this.content.length();
     }
@@ -58,6 +59,7 @@ public class MarkContext {
         BORROWABLE_BLANK.add(MARK.CHECK_BOX);
         BORROWABLE_BLANK.add(MARK.DISABLE_CHECK_BOX);
         BORROWABLE_BLANK.add(MARK.TABLE);
+        BORROWABLE_BLANK.add(MARK.NUMBER_LIST);
 
         CONTAINER.add(MARK.H6);
         CONTAINER.add(MARK.H5);
@@ -67,7 +69,6 @@ public class MarkContext {
         CONTAINER.add(MARK.H1);
         CONTAINER.add(MARK.BOLD);
         CONTAINER.add(MARK.ITALIC);
-
         CONTAINER.add(MARK.CODE);
         CONTAINER.add(MARK.TAB);
         CONTAINER.add(MARK.QUOTE);
@@ -106,6 +107,7 @@ public class MarkContext {
         MARK_PARSER_MAP.put(MARK.TAB, new TabParser());
         MARK_PARSER_MAP.put(MARK.CODE, new CodeParser());
         MARK_PARSER_MAP.put(MARK.TABLE, new TableParser());
+        MARK_PARSER_MAP.put(MARK.NUMBER_LIST, new NumberListParser());
 
         CHILD_MARK_PARSER.put(MARK.H1, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.H2, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
@@ -126,6 +128,7 @@ public class MarkContext {
         CHILD_MARK_PARSER.put(MARK.ERASURE, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ITALIC, MARK.HIGHLIGHT, MARK.HYPER_LINK, MARK.IMAGE));
         CHILD_MARK_PARSER.put(MARK.IMAGE, null);
         CHILD_MARK_PARSER.put(MARK.TABLE, null);
+        CHILD_MARK_PARSER.put(MARK.NUMBER_LIST, Arrays.asList(MARK.BOLD, MARK.ITALIC, MARK.ERASURE, MARK.UNDERLINE, MARK.HIGHLIGHT, MARK.IMAGE, MARK.HYPER_LINK));
         CHILD_MARK_PARSER.put(MARK.HYPER_LINK, Arrays.asList(MARK.UNDERLINE, MARK.BOLD, MARK.ERASURE, MARK.HIGHLIGHT, MARK.ITALIC, MARK.IMAGE));
     }
 
@@ -242,5 +245,12 @@ public class MarkContext {
                 return;
             }
         }
+    }
+
+    public String getInnerHtml(MARK parentMark, String content) {
+        MarkContext innerContext = new MarkContext(content);
+        innerContext.setParentMark(parentMark);
+        MarkdownParserComposite.getInstance().parse(innerContext);
+        return innerContext.getHtml();
     }
 }
