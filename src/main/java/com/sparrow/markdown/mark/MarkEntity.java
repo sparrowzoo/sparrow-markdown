@@ -6,33 +6,27 @@ import java.util.List;
  * Created by harry on 2018/2/12.
  */
 public class MarkEntity {
-    private MarkEntity(MARK mark, Integer start, Integer end) {
+    private MarkEntity(MARK mark,Integer end) {
         this.mark = mark;
-        if (start != null) {
-            this.start = start;
-        }
         this.end = end;
     }
 
     public static MarkEntity createCurrentMark(MARK mark, int end) {
-        return new MarkEntity(mark, null, end);
-    }
-
-    public static MarkEntity createNextMark(MARK mark, int start, int end) {
-        return new MarkEntity(mark, start, end);
+        return new MarkEntity(mark, end);
     }
 
     private MARK mark;
-    private int start;
     private int end;
     private String content;
     private String title;
     private String url;
 
-    private String[]titleArray;
+    private String[] titleArray;
     private List<String[]> tdList;
 
     private List<TagListEntity> tagListEntities;
+
+    private MarkEntity nextEntity;
 
     public MARK getMark() {
         return mark;
@@ -40,14 +34,6 @@ public class MarkEntity {
 
     public void setMark(MARK mark) {
         this.mark = mark;
-    }
-
-    public int getStart() {
-        return start;
-    }
-
-    public void setStart(int start) {
-        this.start = start;
     }
 
     public int getEnd() {
@@ -104,5 +90,13 @@ public class MarkEntity {
 
     public void setTagListEntities(List<TagListEntity> tagListEntities) {
         this.tagListEntities = tagListEntities;
+    }
+
+    public MarkEntity getNextEntity() {
+        return nextEntity;
+    }
+
+    public void setNextEntity(MarkEntity nextEntity) {
+        this.nextEntity = nextEntity;
     }
 }

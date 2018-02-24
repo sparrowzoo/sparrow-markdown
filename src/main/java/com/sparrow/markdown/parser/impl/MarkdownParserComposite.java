@@ -1,8 +1,6 @@
 package com.sparrow.markdown.parser.impl;
 
-import com.sparrow.constant.CONSTANT;
 import com.sparrow.constant.magic.CHAR_SYMBOL;
-import com.sparrow.constant.magic.SYMBOL;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
@@ -38,15 +36,14 @@ public class MarkdownParserComposite implements MarkParser {
         }
         do {
             //detect start mark
-            if (markContext.getNextMark() != null) {
-                markContext.setCurrentMark(markContext.getNextMark());
-                markContext.setNextMark(null);
+            if (markContext.getCurrentMark()!=null&&markContext.getCurrentMark().getNextEntity()!= null) {
+                markContext.setCurrentMark(markContext.getCurrentMark().getNextEntity());
             } else {
-                markContext.detectStartMark(markContext.getParentMark());
+                markContext.setCurrentMark(null);
+                markContext.detectCurrentMark(markContext.getParentMark());
             }
             if (markContext.getCurrentMark() != null) {
                 MarkContext.MARK_PARSER_MAP.get(markContext.getCurrentMark().getMark()).parse(markContext);
-                markContext.clearCurrentMark();
                 continue;
             }
 

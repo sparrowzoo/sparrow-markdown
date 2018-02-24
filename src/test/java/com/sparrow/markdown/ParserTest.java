@@ -12,7 +12,34 @@ public class ParserTest {
 
     public static void main(String[] args) {
         MarkContext markContext = new MarkContext(
-            "1. 11111111\n" +
+            "\n" +
+                "- 1\n" +
+                "   - 1.1\n" +
+                "       - 1.1.1\n" +
+                "         - 1.1.1.1\n" +
+                "            - 1.1.1.1.1\n" +
+                "            - 1.1.1.1.2\n" +
+                "           - 1.1.1.2\n" +
+                "           - 1.1.1.3\n" +
+                "       - 1.1.2\n" +
+                "   - 1.2\n" +
+                "   - 1.3\n" +
+                "- 2\n" +
+                "- 3\n" +
+                "- 1\n" +
+                "   - 1.1\n" +
+                "       - 1.1.1\n" +
+                "         - 1.1.1.1\n" +
+                "            - 1.1.1.1.1\n" +
+                "            - 1.1.1.1.2\n" +
+                "           - 1.1.1.2\n" +
+                "           - 1.1.1.3\n" +
+                "       - 1.1.2\n" +
+                "   - 1.2\n" +
+                "   - 1.3\n" +
+                "- 2\n" +
+                "- 3\n" +
+                "1. 11111111\n" +
                 "2. 2\n" +
                 "8. 3\n" +
                 "   1. 3.1\n" +
@@ -22,11 +49,10 @@ public class ParserTest {
                 "   2. 3.2\n" +
                 "       1. 3.2.1\n" +
                 "sfsdf**sfasff**sfsdf==sfs==adf\n" +
-                "4. 4.1\n" +
-                "sfsdf\n" +
-                "\n" +
+                "4. 4.1 sfsdf\n" +
                 "5. 5\n" +
-                "\nheader 1 | header 2\n" +
+                "5555555555555\n" +
+                "header 1 | header 2\n" +
                 "---|---\n" +
                 "row 1 col 1 | row 1 col 2\n" +
                 "row 2 col 1 | row 2 col 2\n" +

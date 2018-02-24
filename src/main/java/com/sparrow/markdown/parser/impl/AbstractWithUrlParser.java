@@ -40,7 +40,6 @@ public abstract class AbstractWithUrlParser extends AbstractWithEndTagParser imp
         if (title.length() <= 2 || MarkContext.CHILD_MARK_PARSER.get(markContext.getCurrentMark().getMark()) == null) {
             markContext.append(String.format(this.mark().getFormat(), utl, title));
             markContext.setPointer(markContext.getCurrentMark().getEnd() + this.mark().getEnd().length());
-            markContext.clearCurrentMark();
             return;
         }
         markContext.append(String.format(this.mark().getFormat(), utl, markContext.getInnerHtml(this.mark(), title)));

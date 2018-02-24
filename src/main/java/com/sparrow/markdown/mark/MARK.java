@@ -27,7 +27,8 @@ public enum MARK {
     BOLD("**", "**","<span class=\"bold\">%1$s</span>"),
     IMAGE("![",")","<image src=\"%1$s\"/><label>%2$s</label>"),
     HYPER_LINK("[",")","<a href=\"%1$s\">%2$s</a>"),
-    NUMBER_LIST(CONSTANT.ENTER_TEXT_N+"1. ",null,null),
+    ORDERED_LIST(CONSTANT.ENTER_TEXT_N+"1. ",null,null),
+    UNORDERED_LIST(CONSTANT.ENTER_TEXT_N+"- ",null,null),
     TABLE(CONSTANT.ENTER_TEXT_N,null,null);
 
     private String start;

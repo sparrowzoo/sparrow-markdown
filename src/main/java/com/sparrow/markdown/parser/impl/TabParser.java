@@ -1,10 +1,8 @@
 package com.sparrow.markdown.parser.impl;
 
-import com.sparrow.constant.CONSTANT;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
-import com.sparrow.markdown.parser.MarkParser;
 
 /**
  * Created by harry on 2018/2/7.

@@ -1,11 +1,8 @@
 package com.sparrow.markdown.parser.impl;
 
-import com.sparrow.constant.magic.DIGIT;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
-import com.sparrow.markdown.parser.MarkParser;
-import com.sparrow.utility.StringUtility;
 
 /**
  * @author harry
@@ -31,7 +28,6 @@ public class HorizontalLineParser extends AbstractWithEndTagParser {
         String title=markContext.getContent().substring(markContext.getCurrentPointer()+1,markContext.getCurrentMark().getEnd());
         markContext.append(String.format(this.mark().getFormat(), title));
         markContext.setPointer(markContext.getCurrentMark().getEnd()+this.mark().getEnd().length());
-        markContext.clearCurrentMark();
     }
 
 

@@ -29,29 +29,19 @@ import static com.sparrow.markdown.mark.MarkContext.BORROWABLE_BLANK;
 public abstract class AbstractWithEndTagParser implements MarkParser {
 
     @Override public boolean detectStartMark(MarkContext markContext) {
-
         if (markContext.getContent().startsWith(this.mark().getStart(), markContext.getCurrentPointer())) {
             return true;
         }
         int currentPointer = markContext.getCurrentPointer();
         String content = markContext.getContent();
-        //borrowable blank shared with last blank
-        if (!BORROWABLE_BLANK.contains(this.mark())) {
+        int firstBlankIndex=markContext.detectFirstBlank(this.mark(),currentPointer);
+        if(firstBlankIndex==-1){
             return false;
         }
-        //for next -=1 can't not be NEGATIVE
-        if (currentPointer < 1) {
+        if (!content.startsWith(this.mark().getStart(), firstBlankIndex)) {
             return false;
         }
-        currentPointer -= 1;
-        //borrow blank so first latter must be \n
-        if (content.charAt(currentPointer) != CHAR_SYMBOL.ENTER) {
-            return false;
-        }
-        //if borrow blank later although not equal then not match
-        if (!content.startsWith(this.mark().getStart(), currentPointer)) {
-            return false;
-        }
+        markContext.setPointer(firstBlankIndex);
         return true;
     }
 
