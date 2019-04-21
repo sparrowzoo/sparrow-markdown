@@ -1,6 +1,6 @@
 package com.sparrow.markdown.mark;
 
-import com.sparrow.constant.CONSTANT;
+import com.sparrow.protocol.constant.CONSTANT;
 
 /**
  * @author harry

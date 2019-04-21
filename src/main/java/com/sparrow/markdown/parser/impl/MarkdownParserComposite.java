@@ -1,6 +1,6 @@
 package com.sparrow.markdown.parser.impl;
 
-import com.sparrow.constant.magic.CHAR_SYMBOL;
+import com.sparrow.protocol.constant.magic.CHAR_SYMBOL;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
