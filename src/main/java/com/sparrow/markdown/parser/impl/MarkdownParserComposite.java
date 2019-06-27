@@ -5,6 +5,7 @@ import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
 import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.parser.MarkParser;
+import com.sparrow.utility.StringUtility;
 
 /**
  * Created by harry on 2018/2/6.
@@ -30,6 +31,9 @@ public class MarkdownParserComposite implements MarkParser {
 
     @Override
     public void parse(MarkContext markContext) {
+        if(markContext.getContentLength()==0){
+            return;
+        }
         //if first char is not \n then fill
         if (markContext.getParentMark() == null&&markContext.getContent().charAt(0)!= CHAR_SYMBOL.ENTER) {
             markContext.setContent(CHAR_SYMBOL.ENTER + markContext.getContent());
