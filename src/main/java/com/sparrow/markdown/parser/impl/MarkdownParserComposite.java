@@ -35,8 +35,13 @@ public class MarkdownParserComposite implements MarkParser {
             return;
         }
         //if first char is not \n then fill
-        if (markContext.getParentMark() == null&&markContext.getContent().charAt(0)!= CHAR_SYMBOL.ENTER) {
-            markContext.setContent(CHAR_SYMBOL.ENTER + markContext.getContent());
+        if (markContext.getParentMark() == null) {
+            if(markContext.getContent().charAt(0)!= CHAR_SYMBOL.ENTER) {
+                markContext.setContent(CHAR_SYMBOL.ENTER + markContext.getContent());
+            }
+            if(markContext.getContent().charAt(markContext.getContentLength()-1)!=CHAR_SYMBOL.ENTER) {
+                markContext.setContent(markContext.getContent()+CHAR_SYMBOL.ENTER);
+            }
         }
         do {
             //detect start mark

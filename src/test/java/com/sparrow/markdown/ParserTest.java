@@ -115,7 +115,7 @@ public class ParserTest {
             "*我*==爱==++北京++==天安门==，**天安门**==上阳==升");
         MarkParser markParser = MarkdownParserComposite.getInstance();
         markParser.parse(markContext);
-        FileUtility.getInstance().writeFile("/Users/harry/markdown.html", "<style>\n" +
+        FileUtility.getInstance().writeFile("d:\\markdown.html", "<style>\n" +
             "    .bold{\n" +
             "        font-weight: bold;\n" +
             "    }\n" +

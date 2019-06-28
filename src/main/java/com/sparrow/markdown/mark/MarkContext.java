@@ -105,7 +105,6 @@ public class MarkContext {
         MARK_PARSER_MAP.put(MARK.HYPER_LINK, new HyperLinkParser());
         MARK_PARSER_MAP.put(MARK.IMAGE, new ImageParser());
         MARK_PARSER_MAP.put(MARK.TAB, new TabParser());
-        MARK_PARSER_MAP.put(MARK.CODE, new CodeParser());
         MARK_PARSER_MAP.put(MARK.TABLE, new TableParser());
         MARK_PARSER_MAP.put(MARK.ORDERED_LIST, new OrderedListParser());
         MARK_PARSER_MAP.put(MARK.UNORDERED_LIST, new UnorderedListParser());
@@ -138,7 +137,7 @@ public class MarkContext {
     private String content = null;
     private StringBuilder html = new StringBuilder(8192);
     /**
-     * current marck
+     * current mark
      */
     private MarkEntity currentMark;
     /**
@@ -166,6 +165,7 @@ public class MarkContext {
 
     public void setContent(String content) {
         this.content = content;
+        this.contentLength=this.content.length();
     }
 
     public MarkEntity getCurrentMark() {
