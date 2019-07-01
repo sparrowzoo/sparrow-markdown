@@ -18,7 +18,7 @@ public enum MARK {
     TAB(CONSTANT.ENTER_TEXT_N+CONSTANT.ENTER_TEXT_N+"    ", null,"<p class=\"tab\">%1$s</p>"),
     CHECK_BOX(CONSTANT.ENTER_TEXT_N+"- [ ] ", CONSTANT.ENTER_TEXT_N,"<input type=\"checkbox\" disabled=\"\"><label>%1$s</label>"),
     DISABLE_CHECK_BOX(CONSTANT.ENTER_TEXT_N+"- [x] ", CONSTANT.ENTER_TEXT_N,"<input type=\"checkbox\" disabled=\"\" checked=\"checked\"><label>%1$s</label>"),
-    CODE(CONSTANT.ENTER_TEXT_N+"```"+CONSTANT.ENTER_TEXT_N, CONSTANT.ENTER_TEXT_N+"```"+CONSTANT.ENTER_TEXT_N,"<pre class=\"code\">%1$s</pre>"),
+    CODE(CONSTANT.ENTER_TEXT_N+"```"+CONSTANT.ENTER_TEXT_N, CONSTANT.ENTER_TEXT_N+"```"+CONSTANT.ENTER_TEXT_N,"<pre class=\"prettyprint linenums:1\">%1$s</pre>"),
     HIGHLIGHT("==", "==","<span class=\"highlight\">%1$s</span>"),
     UNDERLINE("++", "++","<span class=\"underline\">%1$s</span>"),
     ERASURE("~~", "~~","<span class=\"erasure\">%1$s</span>"),
