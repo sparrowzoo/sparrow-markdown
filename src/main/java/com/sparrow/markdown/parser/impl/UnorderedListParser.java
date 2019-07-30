@@ -78,7 +78,7 @@ public class UnorderedListParser extends AbstractListParser {
             return currentEntity;
         }
 
-        int indent = StringUtility.getPrefixCount(line, "   ");
+        int indent = StringUtility.getPrefixCount(line, "    ");
         TagListEntity parent = this.getParent(currentEntity, indent);
         if (parent == null) {
             currentEntity.setContent(currentEntity.getContent() + innerLine);

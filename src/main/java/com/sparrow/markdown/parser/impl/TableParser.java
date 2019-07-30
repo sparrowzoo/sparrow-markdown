@@ -89,13 +89,14 @@ public class TableParser extends AbstractWithEndTagParser {
         String[] titleArray = markContext.getCurrentMark().getTitleArray();
         List<String[]> tdList = markContext.getCurrentMark().getTdList();
         StringBuilder table = new StringBuilder(1024);
-        table.append("<table class=\"pure-table-horizontal\"><thead><tr>");
+        table.append("<table class=\"pure-table pure-table-horizontal\"><thead><tr>");
         for (String title : titleArray) {
             table.append(String.format("<th>%1$s</th>", title));
         }
         table.append("<tr/></thead>");
+        table.append("<tbody>");
         for (String[] tdArray : tdList) {
-            table.append("<tbody><tr>");
+            table.append("<tr>");
             for (String td : tdArray) {
                 table.append(String.format("<td>%1$s</td>", td));
             }
