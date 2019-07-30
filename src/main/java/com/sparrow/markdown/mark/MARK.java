@@ -25,7 +25,7 @@ public enum MARK {
     ITALIC("*", "*","<span class=\"italic\">%1$s</span>"),
     LITERARY("", null,"%1$s"),
     BOLD("**", "**","<span class=\"bold\">%1$s</span>"),
-    IMAGE("![",")","<div class=\"image-package\"><image src=\"%1$s\"/><label>%2$s</label></div>"),
+    IMAGE("![",")","<div class=\"image-package\"><image src=\"%1$s\"/><br/><label>%2$s</label></div>"),
     HYPER_LINK("[",")","<a href=\"%1$s\">%2$s</a>"),
     ORDERED_LIST(CONSTANT.ENTER_TEXT_N+"1. ",null,null),
     UNORDERED_LIST(CONSTANT.ENTER_TEXT_N+"- ",null,null),
