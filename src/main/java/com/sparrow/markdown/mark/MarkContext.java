@@ -34,6 +34,7 @@ public class MarkContext {
     public MarkContext(String content) {
         this.content = content;
         this.currentPointer = 0;
+        this.content = this.content.replaceAll("\\r\\n", "\n");
         this.contentLength = this.content.length();
     }
 
@@ -165,7 +166,7 @@ public class MarkContext {
 
     public void setContent(String content) {
         this.content = content;
-        this.contentLength=this.content.length();
+        this.contentLength = this.content.length();
     }
 
     public MarkEntity getCurrentMark() {
@@ -234,7 +235,7 @@ public class MarkContext {
     public boolean detectNextMark(MARK currentMark) {
         int originalPointer = this.currentPointer;
         for (MARK mark : MarkContext.CONTAINER) {
-            if(mark.equals(currentMark)){
+            if (mark.equals(currentMark)) {
                 continue;
             }
             MarkParser markParser = MarkContext.MARK_PARSER_MAP.get(mark);
@@ -280,7 +281,6 @@ public class MarkContext {
         }
         return pointer;
     }
-
 
 
     public MarkEntity getTempNextMark() {
