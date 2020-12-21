@@ -125,7 +125,7 @@ public class OrderedListParser extends AbstractListParser {
             }
         }
         if (ol.length() > 0) {
-            ol.insert(0, String.format("<ol class=\"ol%1$s\">\n", intent == null ? "" : "_" + intent));
+            ol.insert(0, String.format("<ol class=\"md-ol-%1$s\">\n", intent == null ? "" : "_" + intent));
             ol.append("</ol>\n");
         }
         return ol.toString();

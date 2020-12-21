@@ -106,7 +106,7 @@ public class UnorderedListParser extends AbstractListParser {
             }
         }
         if (ol.length() > 0) {
-            ol.insert(0, String.format("<ul class=\"ul%1$s\">\n", intent == null ? "" : "_" + intent));
+            ol.insert(0, String.format("<ul class=\"md-ul-%1$s\">\n", intent == null ? "" : "_" + intent));
             ol.append("</ul>\n");
         }
         return ol.toString();
