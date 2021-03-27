@@ -17,18 +17,13 @@
 package com.sparrow.markdown.parser.impl;
 
 import com.sparrow.protocol.constant.CONSTANT;
-import com.sparrow.constant.REGEX;
 import com.sparrow.protocol.constant.magic.CHAR_SYMBOL;
 import com.sparrow.markdown.mark.MARK;
 import com.sparrow.markdown.mark.MarkContext;
-import com.sparrow.markdown.mark.MarkEntity;
 import com.sparrow.markdown.mark.TagListEntity;
-import com.sparrow.markdown.parser.MarkParser;
 import com.sparrow.utility.CollectionsUtility;
 import com.sparrow.utility.StringUtility;
 import java.util.List;
-
-import static com.sparrow.markdown.mark.MarkContext.BORROWABLE_BLANK;
 
 /**
  * @author harry

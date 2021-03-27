@@ -1,7 +1,7 @@
 package com.sparrow.markdown.image;
 
-import com.sparrow.constant.FILE;
-import com.sparrow.constant.REGEX;
+import com.sparrow.constant.File;
+import com.sparrow.constant.Regex;
 import com.sparrow.image.AbstractImageExtractor;
 import com.sparrow.protocol.constant.CONSTANT;
 import com.sparrow.protocol.dto.ImageDTO;
@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 public class MarkdownImageExtractor extends AbstractImageExtractor {
     @Override
     protected String getImageRegexMark() {
-        return REGEX.TAG_MARKDOWN_IMAGE;
+        return Regex.TAG_MARKDOWN_IMAGE;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class MarkdownImageExtractor extends AbstractImageExtractor {
             }
             String url = FileUtility.getInstance().getShufflePath(
                     image.getImageId(), image.getExtension(), true,
-                    FILE.SIZE.BIG);
+                    File.SIZE.BIG);
             content = content.replace(
                     image.getImageMark(), String.format(CONSTANT.IMAGE_MARKDOWN_MARK_FORMAT, image.getRemark(), url));
         }
